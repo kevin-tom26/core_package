@@ -262,4 +262,41 @@ class LoginService extends BaseService {
       );
     }
   }
+
+  Future<RestResponse> registerUser({
+    dynamic requestData,
+    required void Function(int?, RestResponse?)? onPressSuccess,
+    required void Function(int?, RestResponse?)? onPressError,
+  }) async {
+    if (CustomLogin.registrationURL == null ||
+        CustomLogin.registrationURL!.isEmpty) {
+      throw Exception("Registration URL cannot be null or empty.");
+    }
+    final String url = CustomLogin.registrationURL!;
+    try {
+      RestResponse _response = await dioClient.post(
+        url,
+        data: requestData,
+        onHandleSuccessDisplay: (status, resp) {
+          if (onPressSuccess != null) {
+            onPressSuccess(status, resp);
+          }
+        },
+        onHandleErrorDisplay: (status, resp) {
+          if (onPressError != null) {
+            onPressError(status, resp);
+          }
+        },
+      );
+      if (_response.apiSuccess) {
+        _processLogin(_response);
+      }
+      return _response;
+    } on DioException catch (e) {
+      return RestResponse(
+        message: DioExceptionUtil.handleError(e),
+        apiSuccess: false,
+      );
+    }
+  }
 }

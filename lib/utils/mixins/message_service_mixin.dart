@@ -16,10 +16,8 @@ mixin HandleMessageServices {
         dioError.response!.data.toString().isNotEmpty) {
       if (dioError.response!.data is Map &&
           dioError.response!.data?['status'] != null) {
-        responseRestModal.statusCode =
-            dioError.response!.data['status']['code'];
-        responseRestModal.message =
-            dioError.response!.data['status']['message'] ?? '';
+        responseRestModal.statusCode = dioError.response!.statusCode;
+        responseRestModal.message = dioError.response!.statusMessage ?? '';
       } else if (dioError.response!.data is String &&
           dioError.response!.statusCode != null &&
           dioError.response!.statusMessage != null) {

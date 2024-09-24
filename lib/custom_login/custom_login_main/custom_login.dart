@@ -13,6 +13,11 @@ enum LoginMethod {
   emailOTP,
 }
 
+enum RegistrationMethod {
+  emailPassword,
+  mobilePassword,
+}
+
 enum OTPtype { loginOTP, verificationOTP }
 
 class CustomLogin
@@ -42,6 +47,7 @@ class CustomLogin
   static String? checkUserExistURL;
   static String? verifyOTPURL;
   static String? reSetPasswordURL;
+  static String? registrationURL;
   static String? apiContentType;
   static String? apiAuthorization;
 
@@ -63,6 +69,7 @@ class CustomLogin
     String? checkUserExistUrl,
     String? verifyOTPUrl,
     String? reSetPasswordUrl,
+    String? registrationUrl,
     required String? contentType,
     required String? authorization,
   }) {
@@ -75,6 +82,7 @@ class CustomLogin
     checkUserExistURL = checkUserExistUrl;
     verifyOTPURL = verifyOTPUrl;
     reSetPasswordURL = reSetPasswordUrl;
+    registrationURL = registrationUrl;
     apiContentType = contentType;
     apiAuthorization = authorization;
   }
@@ -891,24 +899,108 @@ class CustomLogin
         encryptPassword: encryptPasswordForApi);
   }
 
-  // return ElevatedButton(
-  //   key: key,
-  //   onPressed: () {
-  //     bool isValid = true;
-  //     if (validate) {
-  //       isValid = _validateFields();
-  //     }
+  void registrationHandler({
+    required BuildContext context,
+    required RegistrationMethod registrationMethod,
+    bool validate = true,
+    required VoidCallback onSubmit,
+    void Function(String?)? onValidationError,
+    VoidCallback? onValidationSuccess,
+    void Function(int?, RestResponse?)? onPressSuccessContinue,
+    void Function(int?, RestResponse?)? onPressErrorContinue,
+    String referralCode = '',
+  }) async {
+    bool isValid = true;
+    if (validate) {
+      isValid = _validateFields();
+    }
 
-  //     if (isValid) {
-  //       onValidationSuccess?.call();
-  //       onSubmit();
-  //     } else {
-  //       onValidationError?.call(errorMessage);
-  //     }
-  //   },
-  //   style: ElevatedButton.styleFrom(backgroundColor: backgroundColor),
-  //   child: Text(buttonText, style: TextStyle(color: textColor)),
-  // );
+    if (isValid) {
+      errorMessage = null;
+      onValidationSuccess?.call();
+
+      if (await checkRegistrationMethod(
+          context, registrationMethod, referralCode,
+          onPressSuccessContinue: onPressSuccessContinue,
+          onPressErrorContinue: onPressErrorContinue)) {
+        onSubmit();
+      } else {
+        onValidationError?.call(errorMessage);
+      }
+    } else {
+      onValidationError?.call(errorMessage);
+    }
+  }
+
+  Future<bool> checkRegistrationMethod(BuildContext context,
+      RegistrationMethod registrationMethod, String referalCode,
+      {required void Function(int?, RestResponse?)? onPressSuccessContinue,
+      required void Function(int?, RestResponse?)?
+          onPressErrorContinue}) async {
+    switch (registrationMethod) {
+      case RegistrationMethod.emailPassword:
+        {
+          if (_controllers['email'] == null) {
+            errorMessage = "Email field dosen't exist";
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("email field dosen't exist")));
+            return false;
+          }
+          if (_controllers['password'] == null) {
+            errorMessage = "Password field dosen't exist";
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("password field dosen't exist")));
+            return false;
+          }
+          if (_controllers['email']!.text.isNotEmpty &&
+              _controllers['password']!.text.isNotEmpty) {
+            return await loginStore.registerUser(
+                _controllers['email']!.text, _controllers['password']!.text,
+                encryptPassword: encryptPasswordForApi,
+                referralCode: referalCode,
+                onPressSuccessContinue: onPressSuccessContinue,
+                onPressErrorContinue: onPressErrorContinue);
+          }
+          errorMessage = "Field is empty";
+          return false;
+        }
+      case RegistrationMethod.mobilePassword:
+        {
+          if (_controllers['mobile'] == null) {
+            errorMessage = "Mobile field dosen't exist";
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("mobile field dosen't exist")));
+            return false;
+          }
+          if (_controllers['password'] == null) {
+            errorMessage = "Password field dosen't exist";
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("password field dosen't exist")));
+            return false;
+          }
+          if (_controllers['mobile']!.text.isNotEmpty &&
+              _controllers['password']!.text.isNotEmpty) {
+            return await loginStore.registerUser(
+                _controllers['mobile']!.text, _controllers['password']!.text,
+                encryptPassword: encryptPasswordForApi,
+                referralCode: referalCode,
+                onPressSuccessContinue: onPressSuccessContinue,
+                onPressErrorContinue: onPressErrorContinue);
+          }
+          errorMessage = "Field is empty";
+          return false;
+        }
+      default:
+        {
+          errorMessage = "Invalid Registration Method !!";
+          return false;
+        }
+    }
+  }
 
   // Validation logic for all fields
   bool _validateFields() {

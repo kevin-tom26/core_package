@@ -248,6 +248,46 @@ abstract class _LoginStore with Store {
     }
   }
 
+  @action
+  Future<bool> registerUser(
+    String emailOrMobile,
+    String password, {
+    bool encryptPassword = true,
+    String referralCode = '',
+    required void Function(int?, RestResponse?)? onPressSuccessContinue,
+    required void Function(int?, RestResponse?)? onPressErrorContinue,
+  }) async {
+    loading = true;
+    final userName = emailOrMobile;
+    final encypPassword = sha256.convert(utf8.encode(password)).toString();
+    Map<String, dynamic> data = {
+      if (!isNumeric(userName)) "email": userName,
+      if (isNumeric(userName)) "mobileNo": userName,
+      if (referralCode.isNotEmpty) "referralCode": referralCode,
+      "password": encryptPassword ? encypPassword : password,
+    };
+    // return false;
+    final RestResponse _future = await loginService.registerUser(
+      requestData: data,
+      onPressSuccess: onPressSuccessContinue,
+      onPressError: onPressErrorContinue,
+    );
+    if (_future.apiSuccess) {
+      loading = false;
+      final _ress = await loginService.userLoginWithPassword({
+        'username': userName,
+        'password': encryptPassword ? encypPassword : password,
+        'grant_type': 'password',
+      });
+      // message = _future.message;
+      return _ress.apiSuccess;
+    } else {
+      loading = false;
+      // message = _future.message;
+      return _future.apiSuccess;
+    }
+  }
+
   //API calls-------------------------------------------------------------------
 
   // general methods:-----------------------------------------------------------

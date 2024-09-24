@@ -9,6 +9,22 @@ part of 'login_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$LoginStore on _LoginStore, Store {
+  late final _$loadingAtom =
+      Atom(name: '_LoginStore.loading', context: context);
+
+  @override
+  bool get loading {
+    _$loadingAtom.reportRead();
+    return super.loading;
+  }
+
+  @override
+  set loading(bool value) {
+    _$loadingAtom.reportWrite(value, super.loading, () {
+      super.loading = value;
+    });
+  }
+
   late final _$mobileOrEmailAtom =
       Atom(name: '_LoginStore.mobileOrEmail', context: context);
 
@@ -187,6 +203,47 @@ mixin _$LoginStore on _LoginStore, Store {
     return _$guestLoginAsyncAction.run(() => super.guestLogin());
   }
 
+  late final _$changePasswordAsyncAction =
+      AsyncAction('_LoginStore.changePassword', context: context);
+
+  @override
+  Future<bool> changePassword(
+      {required String currentPassword,
+      required String newPassword,
+      bool encryptPassword = true}) {
+    return _$changePasswordAsyncAction.run(() => super.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        encryptPassword: encryptPassword));
+  }
+
+  late final _$reSetPasswordAsyncAction =
+      AsyncAction('_LoginStore.reSetPassword', context: context);
+
+  @override
+  Future<bool> reSetPassword(
+      {required String newPassword, bool encryptPassword = true}) {
+    return _$reSetPasswordAsyncAction.run(() => super.reSetPassword(
+        newPassword: newPassword, encryptPassword: encryptPassword));
+  }
+
+  late final _$registerUserAsyncAction =
+      AsyncAction('_LoginStore.registerUser', context: context);
+
+  @override
+  Future<bool> registerUser(String emailOrMobile, String password,
+      {bool encryptPassword = true,
+      String referralCode = '',
+      required void Function(int?, RestResponse?)? onPressSuccessContinue,
+      required void Function(int?, RestResponse?)? onPressErrorContinue}) {
+    return _$registerUserAsyncAction.run(() => super.registerUser(
+        emailOrMobile, password,
+        encryptPassword: encryptPassword,
+        referralCode: referralCode,
+        onPressSuccessContinue: onPressSuccessContinue,
+        onPressErrorContinue: onPressErrorContinue));
+  }
+
   late final _$_LoginStoreActionController =
       ActionController(name: '_LoginStore', context: context);
 
@@ -248,6 +305,7 @@ mixin _$LoginStore on _LoginStore, Store {
   @override
   String toString() {
     return '''
+loading: ${loading},
 mobileOrEmail: ${mobileOrEmail},
 otp: ${otp},
 otpId: ${otpId},
