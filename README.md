@@ -25,6 +25,7 @@ To start using the package, you first need to initialize the StartupService clas
 ## Step 1: Initialize StartupService
 In your splash screen, override the initState method and initialize the StartupService as follows:
 
+```dart
 void initState() {
   _startupService = StartupService(
     handleTokenExpiry: (error) {},
@@ -46,16 +47,18 @@ void initState() {
   );
   super.initState();
 }
+```
 
 ## Custom Login Setup
 To use the custom login functionality, create an instance of the CustomLogin class and set the necessary URLs for the various login methods.
 
 ## Step 2: Create CustomLogin Instance
-
+```dart
 final CustomLogin _customLogin = CustomLogin();
-
+```
 ## Step 3: Configure URLs
 Initialize the URLs for login in the init method:
+```dart
 _customLogin.setURLS(
   loginWithPasswordUrl: "loginURL",
   sendOTPUrl: 'Some OTP URL',
@@ -68,9 +71,11 @@ _customLogin.setURLS(
   contentType: Config.contentTypeApp,
   authorization: Config.basicAuth
 );
+```
 
 ## User Input Fields
 You can use the methods provided by CustomLogin to create input fields for user credentials.
+```dart
 // Username Field
 _customLogin.userName(
   context: context,
@@ -97,10 +102,10 @@ _customLogin.password(
   hintText: 'Password',
   controller: passwordController
 );
-
+```
 ## Submitting Login
 For auto validation and API calls, utilize the submitButton method.
-
+```dart
 _customLogin.submitButton(
   context: context,
   loginMethod: LoginMethod.mobileOTP,
@@ -117,11 +122,11 @@ _customLogin.submitButton(
   },
   buttonText: 'Login',
 );
-
+```
 ## Custom Handler
 Apart from submitButton method we can use various handler functions like loginSubmitHandler(), changePasswordHandler(), reSetPasswordHandler(), registrationHandler().
 Example of registrationHandler():
-
+```dart
 ElevatedButton(
   onPressed: () {
     _customLogin.registrationHandler(
@@ -146,11 +151,12 @@ ElevatedButton(
   },
   child: const Text('Register User')
 );
-
+```
 ## Social Login Methods
 Before using social login methods, ensure necessary configurations are in place. Here’s how to implement various social logins:
 
 ## Google Login:
+```dart
 _customLogin.googleLogin(
   screenSize: MediaQuery.of(context).size,
   context: context,
@@ -161,8 +167,9 @@ _customLogin.googleLogin(
     }
   },
 );
-
+```
 ## Facebook Login:
+```dart
 _customLogin.facebookLogin(
   screenSize: MediaQuery.of(context).size,
   context: context,
@@ -173,8 +180,9 @@ _customLogin.facebookLogin(
     }
   },
 );
-
+```
 ## LinkedIn Login:
+```dart
 _customLogin.linkedInLogin(
   context: context,
   screenSize: MediaQuery.of(context).size,
@@ -186,8 +194,9 @@ _customLogin.linkedInLogin(
     // Handle Navigation
   },
 );
-
+```
 ## Apple Login:
+```dart
 _customLogin.appleLogin(
   screenSize: MediaQuery.of(context).size,
   context: context,
@@ -200,10 +209,10 @@ _customLogin.appleLogin(
     }
   },
 );
-
+```
 ## OTP Method
 Here’s how to set up the OTP method:
-
+```dart
 _customLogin.otpField(
   screenSize: MediaQuery.of(context).size,
   otpProjectCode: "project code for auto reading of otp",
@@ -220,6 +229,6 @@ _customLogin.otpField(
     // Handle submit navigation
   },
 );
-
+```
 ## Conclusion
 This documentation outlines the basic setup and usage of the custom package. For further details or advanced configurations, refer to the package's source code or reach out for support.
