@@ -231,4 +231,4 @@ _customLogin.otpField(
 );
 ```
 ## Conclusion
-This documentation outlines the basic setup and usage of the custom package. For further details or advanced configurations, refer to the package's source code or reach out for support.
+This documentation outlines the basic setup and usage of the custom package. For further details or advanced configurations, refer to the package's source code.
